@@ -1,8 +1,8 @@
 import { Card, CardContent, Grid, Avatar, Chip, Stack } from "@mui/material";
-import { IUser } from "../../models/IUser";
+import { UserModel } from "../../models/UserModel";
 
 type Props = {
-  user: IUser;
+  user: UserModel;
   layout: string;
 };
 

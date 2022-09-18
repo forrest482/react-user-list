@@ -1,35 +1,35 @@
-import {
-  FormControl,
-  FormControlLabel,
-  Grid,
-  Pagination,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Grid, Pagination } from "@mui/material";
 import { useEffect, useState } from "react";
-import { IUser } from "../../models/IUser";
-import { getUsers } from "../../services/userService";
+import CardLayoutSelect from "../../components/card-layout-select";
+import { UserModel } from "../../models/UserModel";
+import { userService } from "../../services/userService";
 import UserItem from "./UserItem";
 
 const UsersList = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
+  //States
+  const [users, setUsers] = useState<UserModel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [cardLayout, setCardLayout] = useState<string>("vertical");
 
+  //Hooks and Event Handlers
   useEffect(() => {
-    setIsLoading(true);
-    getUsers(currentPage).then((c) => {
-      if (c) {
-        setUsers(c.data);
-        setTotalCount(c.total);
-        setTotalPages(c.total_pages);
-        setIsLoading(false);
-      }
-    });
+    getUsers();
   }, [currentPage]);
+
+  const getUsers = async () => {
+    setIsLoading(true);
+    const response = await userService.getUsers(currentPage);
+    if (response) {
+      setUsers(response.data);
+      setTotalCount(response.total);
+      setTotalPages(response.total_pages);
+    }
+    setIsLoading(false);
+  };
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -44,36 +44,22 @@ const UsersList = () => {
     setCardLayout((event.target as HTMLInputElement).value);
   };
 
+  //Render
   return (
-    <div
-      style={{
-        textAlign: "center",
-        justifyContent: "center",
-      }}
-    >
+    <>
       {isLoading && <h1>Loading....</h1>}
 
       <h3>Total Users Count: {totalCount}</h3>
 
-      <FormControl>
-        <RadioGroup row value={cardLayout} onChange={handleChangeCardLayout}>
-          <FormControlLabel
-            value="vertical"
-            control={<Radio />}
-            label="Vertical"
-          />
-          <FormControlLabel
-            value="horizontal"
-            control={<Radio />}
-            label="Horizontal"
-          />
-        </RadioGroup>
-      </FormControl>
+      <CardLayoutSelect
+        cardLayout={cardLayout}
+        onLayoutChange={handleChangeCardLayout}
+      />
 
       <Grid
         container
-        spacing={{ xs: 1, md: 3 }}
-        columns={{ xs: 2, sm: 8, md: 12 }}
+        spacing={{ xs: 1 }}
+        columns={{ xs: cardLayout === "vertical" ? 4 : 2 }}
       >
         {users.map((user) => (
           <UserItem user={user} layout={cardLayout} key={user.id} />
@@ -88,7 +74,7 @@ const UsersList = () => {
           onChange={handlePageChange}
         />
       </Grid>
-    </div>
+    </>
   );
 };
 

@@ -1,4 +1,5 @@
-﻿import axios from "axios";
+/* eslint-disable import/no-anonymous-default-export */
+import axios from "axios";
 import { setupInterceptorsTo } from "./Interceptors";
 
 setupInterceptorsTo(axios);

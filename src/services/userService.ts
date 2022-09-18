@@ -1,14 +1,16 @@
-﻿import http from "./httpService";
-import { IUsersList } from "../models/IUsersList";
+import http from "./httpService";
+import { UsersListModel } from "../models/UsersListModel";
 
 const baseURL = "https://reqres.in/api";
 
-export async function getUsers(page: number) {
-  try {
-    const { data } = await http.get<IUsersList>(`${baseURL}/users?page=${page}`);
-    return data;
-  } catch (error) {
-    console.log('unexpected error: ', error);
+export const userService = {
+  getUsers: async (page: number) =>{
+    try {
+      const { data } = await http.get<UsersListModel>(`${baseURL}/users?page=${page}`);
+      return data;
+    } catch (error) {
+      console.log('unexpected error: ', error);
+    }
   }
 }
 
